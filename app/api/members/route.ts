@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({} as Record<string, unknown>));
     const fullName = String(body.fullName ?? "").trim();
     const phoneNumberRaw = body.phoneNumber ? String(body.phoneNumber).trim() : "";
+    const address = body.address ? String(body.address).trim() : "";
 
     if (fullName.length < 2) {
       return badRequest("Please enter your full name (at least 2 characters).");
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
     const created = await Member.create({
       fullName,
       phoneNumber: phoneNumberRaw ? normalizePhone(phoneNumberRaw) : undefined,
+      address: address || undefined,
       isActive: true,
     });
 

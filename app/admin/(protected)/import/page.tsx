@@ -50,7 +50,7 @@ export default function ImportPage() {
     if (!preview) return;
     const rows = preview.rows
       .filter((r) => !r.duplicateOf && r.valid)
-      .map((r) => ({ fullName: r.fullName, phoneNumber: r.phoneNumber }));
+      .map((r) => ({ fullName: r.fullName, phoneNumber: r.phoneNumber, address: r.address }));
     if (rows.length === 0) {
       toast.error("There are no new members to import.");
       return;
@@ -110,7 +110,7 @@ export default function ImportPage() {
                 Click to choose a file or drag it here
               </span>
               <span className="mt-1 text-xs text-slate-400">
-                CSV or Excel · include a name column, optional phone column
+                CSV or Excel · include a name column, optional phone and address columns
               </span>
             </label>
 
@@ -145,13 +145,13 @@ export default function ImportPage() {
             </div>
             <p className="mb-2">Your file should have columns like:</p>
             <pre className="overflow-x-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
-{`Full Name, Phone Number
-John Okafor, 08012345678
-Mary Ade, 08098765432`}
+{`Full Name, Phone Number, Address
+John Okafor, 08012345678, 12 Allen Avenue, Ikeja
+Mary Ade, 08098765432, 5 Broad Street, Lagos`}
             </pre>
             <p className="mt-2 text-xs text-slate-400">
-              The phone column is optional. Header names are auto-detected; if none are found the
-              first column is treated as names.
+              The phone and address columns are optional. Header names are auto-detected; if none
+              are found the first column is treated as names.
             </p>
           </div>
         </div>
@@ -190,6 +190,7 @@ Mary Ade, 08098765432`}
                 <tr>
                   <th className="px-5 py-2 font-medium">Name</th>
                   <th className="px-5 py-2 font-medium">Phone</th>
+                  <th className="px-5 py-2 font-medium">Address</th>
                   <th className="px-5 py-2 font-medium">Status</th>
                 </tr>
               </thead>
@@ -198,6 +199,7 @@ Mary Ade, 08098765432`}
                   <tr key={`${r.index}-${i}`} className={r.duplicateOf ? "bg-amber-50/40" : ""}>
                     <td className="px-5 py-2 text-slate-800">{r.fullName}</td>
                     <td className="px-5 py-2 text-slate-500">{r.phoneNumber || "—"}</td>
+                    <td className="px-5 py-2 text-slate-500">{r.address || "—"}</td>
                     <td className="px-5 py-2">
                       {r.duplicateOf === "existing" ? (
                         <span className="text-xs font-medium text-amber-700">

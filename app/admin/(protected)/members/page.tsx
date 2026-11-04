@@ -7,7 +7,7 @@ import { apiFetch } from "@/lib/client";
 import type { MemberDTO } from "@/lib/types";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Button, Spinner } from "@/components/ui/Button";
-import { Input, Label } from "@/components/ui/Field";
+import { Input, Label, Textarea } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
@@ -19,7 +19,7 @@ export default function MembersPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<MemberDTO | null>(null);
-  const [form, setForm] = useState({ fullName: "", phoneNumber: "" });
+  const [form, setForm] = useState({ fullName: "", phoneNumber: "", address: "" });
   const [saving, setSaving] = useState(false);
 
   const [confirm, setConfirm] = useState<MemberDTO | null>(null);
@@ -49,13 +49,13 @@ export default function MembersPage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ fullName: "", phoneNumber: "" });
+    setForm({ fullName: "", phoneNumber: "", address: "" });
     setModalOpen(true);
   }
 
   function openEdit(m: MemberDTO) {
     setEditing(m);
-    setForm({ fullName: m.fullName, phoneNumber: m.phoneNumber ?? "" });
+    setForm({ fullName: m.fullName, phoneNumber: m.phoneNumber ?? "", address: m.address ?? "" });
     setModalOpen(true);
   }
 
@@ -72,6 +72,7 @@ export default function MembersPage() {
           body: JSON.stringify({
             fullName: form.fullName.trim(),
             phoneNumber: form.phoneNumber.trim(),
+            address: form.address.trim(),
           }),
         });
         toast.success("Member updated.");
@@ -81,6 +82,7 @@ export default function MembersPage() {
           body: JSON.stringify({
             fullName: form.fullName.trim(),
             phoneNumber: form.phoneNumber.trim(),
+            address: form.address.trim(),
           }),
         });
         toast.success("Member created.");
@@ -140,7 +142,7 @@ export default function MembersPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or phone…"
+            placeholder="Search by name, phone or address…"
             className="pl-9"
           />
         </div>
@@ -174,6 +176,7 @@ export default function MembersPage() {
               <tr>
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Phone</th>
+                <th className="px-4 py-3 font-medium">Address</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Registered</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
@@ -184,6 +187,7 @@ export default function MembersPage() {
                 <tr key={m.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-medium text-slate-800">{m.fullName}</td>
                   <td className="px-4 py-3 text-slate-600">{m.phoneNumber || "—"}</td>
+                  <td className="px-4 py-3 text-slate-600">{m.address || "—"}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -259,6 +263,18 @@ export default function MembersPage() {
               value={form.phoneNumber}
               onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))}
               inputMode="tel"
+            />
+          </div>
+          <div>
+            <Label htmlFor="m-address">
+              Address <span className="text-slate-400">(optional)</span>
+            </Label>
+            <Textarea
+              id="m-address"
+              value={form.address}
+              onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+              rows={2}
+              placeholder="e.g. 12 Allen Avenue, Ikeja, Lagos"
             />
           </div>
         </div>

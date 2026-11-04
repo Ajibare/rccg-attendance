@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RCCG YAYA – Attendance",
+  title: "RCCG YAYA OMNIPRESENT ZONE – Attendance",
   description:
     "Church attendance management for RCCG YAYA. Register your attendance and manage members.",
 };

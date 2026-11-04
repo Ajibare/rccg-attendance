@@ -11,6 +11,7 @@ export type MemberDTO = {
   id: string;
   fullName: string;
   phoneNumber?: string;
+  address?: string;
   isActive: boolean;
   createdAt: string;
 };
@@ -39,6 +40,7 @@ export function toMember(m: IMember): MemberDTO {
     id: m._id.toString(),
     fullName: m.fullName,
     phoneNumber: m.phoneNumber,
+    address: m.address,
     isActive: m.isActive,
     createdAt: m.createdAt.toISOString(),
   };

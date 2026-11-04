@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import Image from "next/image";
 import toast from "react-hot-toast";
-import { Search, UserPlus, Users, CheckCircle2, Church } from "lucide-react";
+import { Search, UserPlus, Users, CheckCircle2 } from "lucide-react";
 import { apiFetch } from "@/lib/client";
 import { useLoader } from "@/lib/useLoader";
 import type { PublicRow, AttendanceSummary } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
-import { Input, Label } from "@/components/ui/Field";
+import { Input, Label, Textarea } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 
 type ActiveResp = {
@@ -26,6 +27,7 @@ export default function AttendancePage() {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [regName, setRegName] = useState("");
   const [regPhone, setRegPhone] = useState("");
+  const [regAddress, setRegAddress] = useState("");
   const [regSaving, setRegSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -83,6 +85,7 @@ export default function AttendancePage() {
           body: JSON.stringify({
             fullName: regName.trim(),
             phoneNumber: regPhone.trim() || undefined,
+            address: regAddress.trim() || undefined,
           }),
         }
       );
@@ -90,6 +93,7 @@ export default function AttendancePage() {
       setRegisterOpen(false);
       setRegName("");
       setRegPhone("");
+      setRegAddress("");
       await load();
       // Immediately offer to mark present for the freshly registered member.
       markPresent(res.id);
@@ -115,12 +119,17 @@ export default function AttendancePage() {
       <header className="bg-brand-800 text-white">
         <div className="mx-auto max-w-3xl px-4 py-8 sm:py-10">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
-              <Church className="h-6 w-6" />
-            </div>
+            <Image
+              src="/rccg-logo.png"
+              alt="RCCG logo"
+              width={44}
+              height={44}
+              priority
+              className="h-11 w-11 rounded-full bg-white object-cover ring-2 ring-white/30"
+            />
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-brand-200">
-                RCCG YAYA
+                RCCG YAYA OMNIPRESENT ZONE
               </p>
               <h1 className="text-xl font-bold sm:text-2xl">Church Attendance</h1>
             </div>
@@ -146,7 +155,7 @@ export default function AttendancePage() {
         {/* Welcome */}
         <section className="mb-6">
           <h2 className="text-lg font-semibold text-slate-900">
-            Welcome to RCCG YAYA
+            Welcome to RCCG YAYA OMNIPRESENT ZONE
           </h2>
           <p className="mt-1 text-sm text-slate-600">
             Please find your name on the attendance list and mark yourself present.
@@ -246,7 +255,7 @@ export default function AttendancePage() {
         </div>
 
         <footer className="mt-8 pb-6 text-center text-xs text-slate-400">
-          RCCG YAYA · Attendance Management
+         RCCG YAYA OMNIPRESENT ZONE · Attendance Management
         </footer>
       </main>
 
@@ -287,6 +296,18 @@ export default function AttendancePage() {
               onChange={(e) => setRegPhone(e.target.value)}
               placeholder="e.g. 08012345678"
               inputMode="tel"
+            />
+          </div>
+          <div>
+            <Label htmlFor="address">
+              Address <span className="text-slate-400">(optional)</span>
+            </Label>
+            <Textarea
+              id="address"
+              value={regAddress}
+              onChange={(e) => setRegAddress(e.target.value)}
+              placeholder="e.g. 12 Allen Avenue, Ikeja, Lagos"
+              rows={2}
             />
           </div>
         </div>

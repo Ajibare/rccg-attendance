@@ -8,6 +8,7 @@ export type MemberDTO = {
   id: string;
   fullName: string;
   phoneNumber?: string;
+  address?: string;
   isActive: boolean;
   createdAt: string;
 };
@@ -55,6 +56,7 @@ export type PreviewRow = {
   index: number;
   fullName: string;
   phoneNumber: string;
+  address: string;
   duplicateOf?: "existing" | "file";
   existingMatchName?: string;
   valid: boolean;

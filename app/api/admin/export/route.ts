@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
     const data = rows.map((r) => ({
       "Member Name": r.member.fullName,
       "Phone Number": r.member.phoneNumber ?? "",
+      Address: r.member.address ?? "",
       Status: statusLabel(r.status),
       "Service / Date": serviceLabel,
     }));
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     }
 
     // CSV
-    const headers = ["Member Name", "Phone Number", "Status", "Service / Date"];
+    const headers = ["Member Name", "Phone Number", "Address", "Status", "Service / Date"];
     const escape = (v: string) => `"${String(v).replace(/"/g, '""')}"`;
     const lines = [
       headers.join(","),

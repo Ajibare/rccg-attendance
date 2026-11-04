@@ -13,7 +13,7 @@ const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
  * POST /api/admin/import
  *  - ?action=preview (default): multipart/form-data with `file`. Returns parsed
  *    rows with duplicate detection, without saving.
- *  - ?action=commit: JSON { rows: [{fullName, phoneNumber?}] }. Saves new members.
+ *  - ?action=commit: JSON { rows: [{fullName, phoneNumber?, address?}] }. Saves new members.
  */
 export async function POST(req: NextRequest) {
   const guard = await requireAdmin();
@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
       const cleaned = rows.map((r: unknown) => ({
         fullName: String((r as { fullName?: string }).fullName ?? ""),
         phoneNumber: String((r as { phoneNumber?: string }).phoneNumber ?? ""),
+        address: String((r as { address?: string }).address ?? ""),
       }));
       const result = await commitImport(cleaned);
       return NextResponse.json(result);

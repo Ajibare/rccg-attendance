@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Church, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 import { apiFetch } from "@/lib/client";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Field";
@@ -36,9 +37,14 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-brand-950 px-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center text-center text-white">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
-            <Church className="h-6 w-6" />
-          </div>
+          <Image
+            src="/rccg-logo.png"
+            alt="RCCG logo"
+            width={48}
+            height={48}
+            priority
+            className="h-12 w-12 rounded-full bg-white object-cover"
+          />
           <h1 className="mt-3 text-lg font-bold">RCCG YAYA</h1>
           <p className="text-sm text-brand-200">Admin Dashboard</p>
         </div>

@@ -16,7 +16,7 @@ import {
 
 type Ctx = { params: Promise<{ id: string }> };
 
-/** PATCH /api/admin/members/[id]  { fullName?, phoneNumber?, isActive? } */
+/** PATCH /api/admin/members/[id]  { fullName?, phoneNumber?, address?, isActive? } */
 export async function PATCH(req: NextRequest, ctx: Ctx) {
   const guard = await requireAdmin();
   if (guard.error) return guard.error;
@@ -44,6 +44,11 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
     if (typeof body.phoneNumber === "string") {
       const phone = normalizePhone(body.phoneNumber);
       member.phoneNumber = phone || undefined;
+    }
+
+    if (typeof body.address === "string") {
+      const address = body.address.trim();
+      member.address = address || undefined;
     }
 
     if (typeof body.isActive === "boolean") {

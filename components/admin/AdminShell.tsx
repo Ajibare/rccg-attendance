@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -14,7 +15,6 @@ import {
   LogOut,
   Menu,
   X,
-  Church,
 } from "lucide-react";
 import { apiFetch } from "@/lib/client";
 import { Button } from "@/components/ui/Button";
@@ -60,11 +60,15 @@ export function AdminShell({
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-2 px-5 py-5 text-white">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/20">
-          <Church className="h-5 w-5" />
-        </div>
+        <Image
+          src="/rccg-logo.png"
+          alt="RCCG logo"
+          width={36}
+          height={36}
+          className="h-9 w-9 rounded-full bg-white object-cover"
+        />
         <div className="leading-tight">
-          <p className="text-sm font-bold">RCCG YAYA</p>
+          <p className="text-sm font-bold">RCCG YAYA OMNIPRESENT ZONE</p>
           <p className="text-[11px] text-brand-200">Admin</p>
         </div>
       </div>
@@ -143,7 +147,7 @@ export function AdminShell({
           >
             <Menu className="h-5 w-5" />
           </button>
-          <span className="font-semibold text-slate-800">RCCG YAYA Admin</span>
+          <span className="font-semibold text-slate-800">RCCG YAYA OMNIPRESENT ZONE Admin</span>
         </header>
 
         <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">

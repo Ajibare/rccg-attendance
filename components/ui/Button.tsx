@@ -1,13 +1,14 @@
 "use client";
 import { ButtonHTMLAttributes } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react"; 
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger" | "success";
 type Size = "sm" | "md" | "lg";
 
 const base =
   "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 disabled:opacity-60 disabled:cursor-not-allowed";
-
+ 
+  
 const variants: Record<Variant, string> = {
   primary: "bg-brand-700 text-white hover:bg-brand-800",
   secondary: "bg-brand-50 text-brand-800 hover:bg-brand-100",

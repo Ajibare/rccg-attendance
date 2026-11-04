@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
       filter.$or = [
         { fullName: { $regex: escapeRegex(search), $options: "i" } },
         { phoneNumber: { $regex: escapeRegex(search), $options: "i" } },
+        { address: { $regex: escapeRegex(search), $options: "i" } },
       ];
     }
 
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/** POST /api/admin/members  { fullName, phoneNumber? } */
+/** POST /api/admin/members  { fullName, phoneNumber?, address? } */
 export async function POST(req: NextRequest) {
   const guard = await requireAdmin();
   if (guard.error) return guard.error;
@@ -61,6 +62,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({} as Record<string, unknown>));
     const fullName = String(body.fullName ?? "").trim();
     const phone = body.phoneNumber ? normalizePhone(String(body.phoneNumber)) : "";
+    const address = body.address ? String(body.address).trim() : "";
 
     if (fullName.length < 2) return badRequest("Full name is required (min 2 characters).");
 
@@ -72,6 +74,7 @@ export async function POST(req: NextRequest) {
     const created = await Member.create({
       fullName,
       phoneNumber: phone || undefined,
+      address: address || undefined,
       isActive: true,
     });
 

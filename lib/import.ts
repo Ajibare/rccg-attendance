@@ -8,6 +8,7 @@ export type ParsedRow = {
   index: number;
   fullName: string;
   phoneNumber: string;
+  address: string;
 };
 
 export type PreviewRow = ParsedRow & {
@@ -19,8 +20,9 @@ export type PreviewRow = ParsedRow & {
 
 const NAME_KEYS = ["name", "full name", "fullname", "member name", "member", "full", "individual"];
 const PHONE_KEYS = ["phone", "phone number", "phonenumber", "mobile", "cell", "tel", "telephone", "number", "contact"];
+const ADDRESS_KEYS = ["address", "home address", "residence", "residential address", "location", "area", "street"];
 
-/** Parses an uploaded CSV/Excel buffer into a list of { fullName, phoneNumber }. */
+/** Parses an uploaded CSV/Excel buffer into a list of { fullName, phoneNumber, address }. */
 export function parseMemberFile(buffer: ArrayBuffer): ParsedRow[] {
   const wb = XLSX.read(buffer, { type: "array" });
   const firstSheet = wb.SheetNames[0];
@@ -36,22 +38,26 @@ export function parseMemberFile(buffer: ArrayBuffer): ParsedRow[] {
 
   let nameCol = 0;
   let phoneCol: number | undefined;
+  let addressCol: number | undefined;
   let startIdx = 0;
 
   const header = (rows[0] as unknown[]).map((c) => String(c).trim().toLowerCase());
   const nameIdx = header.findIndex((h) => NAME_KEYS.some((k) => h === k || h.includes(k)));
   const phoneIdx = header.findIndex((h) => PHONE_KEYS.some((k) => h === k || h.includes(k)));
+  const addressIdx = header.findIndex((h) => ADDRESS_KEYS.some((k) => h === k || h.includes(k)));
 
   if (nameIdx !== -1 || phoneIdx !== -1) {
     // Treat first row as header.
     nameCol = nameIdx !== -1 ? nameIdx : 0;
     phoneCol = phoneIdx !== -1 ? phoneIdx : undefined;
+    addressCol = addressIdx !== -1 ? addressIdx : undefined;
     startIdx = 1;
   } else {
-    // No recognizable header: first column = name, second column (if present) = phone.
+    // No recognizable header: first column = name, second = phone, third = address.
     const width = Math.max(...rows.map((r) => (r as unknown[]).length));
     nameCol = 0;
     phoneCol = width >= 2 ? 1 : undefined;
+    addressCol = width >= 3 ? 2 : undefined;
     startIdx = 0;
   }
 
@@ -60,8 +66,9 @@ export function parseMemberFile(buffer: ArrayBuffer): ParsedRow[] {
     const r = rows[i] as unknown[];
     const fullName = String(r[nameCol] ?? "").trim();
     const phoneNumber = phoneCol !== undefined ? String(r[phoneCol] ?? "").trim() : "";
+    const address = addressCol !== undefined ? String(r[addressCol] ?? "").trim() : "";
     if (!fullName) continue;
-    out.push({ index: i, fullName, phoneNumber });
+    out.push({ index: i, fullName, phoneNumber, address });
   }
   return out;
 }
@@ -118,7 +125,7 @@ export async function annotateDuplicates(parsed: ParsedRow[]): Promise<PreviewRo
 
 /** Persists new (non-duplicate) members. Returns import/skip counts. */
 export async function commitImport(
-  rows: { fullName: string; phoneNumber?: string }[]
+  rows: { fullName: string; phoneNumber?: string; address?: string }[]
 ): Promise<{ imported: number; skipped: number }> {
   await connectDB();
 
@@ -128,7 +135,7 @@ export async function commitImport(
     existing.map((m) => m.phoneNumber && normalizePhone(m.phoneNumber)).filter(Boolean) as string[]
   );
 
-  const toCreate: { fullName: string; phoneNumber?: string }[] = [];
+  const toCreate: { fullName: string; phoneNumber?: string; address?: string }[] = [];
   const batchNames = new Set<string>();
   const batchPhones = new Set<string>();
   let skipped = 0;
@@ -136,6 +143,7 @@ export async function commitImport(
   for (const raw of rows) {
     const fullName = String(raw.fullName ?? "").trim();
     const phoneNumber = raw.phoneNumber ? normalizePhone(String(raw.phoneNumber)) : "";
+    const address = raw.address ? String(raw.address).trim() : "";
     const nKey = normalizeName(fullName);
 
     if (
@@ -150,7 +158,7 @@ export async function commitImport(
 
     batchNames.add(nKey);
     if (phoneNumber) batchPhones.add(phoneNumber);
-    toCreate.push({ fullName, phoneNumber: phoneNumber || undefined });
+    toCreate.push({ fullName, phoneNumber: phoneNumber || undefined, address: address || undefined });
   }
 
   if (toCreate.length > 0) {
