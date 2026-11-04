@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Member } from "@/lib/models/Member";
+import { Attendance } from "@/lib/models/Attendance";
 import { requireAdmin } from "@/lib/guard";
 import { badRequest, serverError, isValidObjectId } from "@/lib/api";
 
@@ -37,6 +38,36 @@ export async function PATCH(req: NextRequest) {
     });
   } catch (err) {
     console.error("PATCH /api/admin/members/bulk failed:", err);
+    return serverError();
+  }
+}
+
+/**
+ * DELETE /api/admin/members/bulk
+ * { ids: string[] } — permanently delete many members and their attendance records.
+ */
+export async function DELETE(req: NextRequest) {
+  const guard = await requireAdmin();
+  if (guard.error) return guard.error;
+
+  try {
+    await connectDB();
+    const body = await req.json().catch(() => ({} as Record<string, unknown>));
+
+    const ids = toObjectIdStrings(body.ids);
+    if (ids.length === 0) return badRequest("Select at least one member.");
+
+    const removedAttendance = await Attendance.deleteMany({
+      memberId: { $in: ids },
+    }).exec();
+    const removedMembers = await Member.deleteMany({ _id: { $in: ids } }).exec();
+
+    return NextResponse.json({
+      deleted: removedMembers.deletedCount ?? 0,
+      attendanceDeleted: removedAttendance.deletedCount ?? 0,
+    });
+  } catch (err) {
+    console.error("DELETE /api/admin/members/bulk failed:", err);
     return serverError();
   }
 }
